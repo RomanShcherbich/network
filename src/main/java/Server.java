@@ -25,7 +25,7 @@ public class Server {
     String sb = "{} has connected to server";
     String clientName = br.readLine();
 
-    String.format(sb, clientName);
+    sb = String.format(sb, clientName);
 
     bw.write(sb);
     bw.newLine();
