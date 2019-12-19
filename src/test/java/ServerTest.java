@@ -1,6 +1,7 @@
 
 import static org.junit.Assert.*;
 
+import client.Client;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.FixMethodOrder;
@@ -20,7 +21,7 @@ public class ServerTest {
     String request = "ping server";
 
     assertEquals(Client.sendRequest(request, "127.0.0.1",25225)
-        ,"Server got request: " + request);
+        ,"server.Server got request: " + request);
   }
 
   @Test
@@ -28,6 +29,6 @@ public class ServerTest {
     String request = "stop server";
 
     assertEquals(Client.sendRequest(request, "127.0.0.1",25225)
-        ,"Server got request: " + request);
+        ,"server.Server got request: " + request);
   }
 }

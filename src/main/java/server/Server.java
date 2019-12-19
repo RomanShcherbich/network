@@ -1,3 +1,5 @@
+package server;
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -18,7 +20,7 @@ public class Server {
       Socket client = socket.accept();
       handleRequest(client);
     }
-    System.out.println("Server is stopped.");
+    System.out.println("server.Server is stopped.");
   }
 
   public static void stopServer() {
@@ -27,14 +29,14 @@ public class Server {
 
   public static void startServer() {
     Server.serverIsStarted = true;
-    System.out.println("Server is started.");
+    System.out.println("server.Server is started.");
   }
 
   private static void handleRequest(Socket request) throws IOException {
     BufferedReader br = new BufferedReader(new InputStreamReader(request.getInputStream()));
     BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(request.getOutputStream()));
 
-    String sb = "Server got request: %s";
+    String sb = "server.Server got request: %s";
     String clientName = br.readLine();
 
     sb = String.format(sb, clientName);
@@ -47,11 +49,11 @@ public class Server {
       stopServer();
     }
 
+    System.out.println(sb);
+
     br.close();
     bw.close();
 
     request.close();
-
-    System.out.println(clientName);
   }
 }
