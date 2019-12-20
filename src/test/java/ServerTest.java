@@ -13,22 +13,29 @@ import java.io.IOException;
 public class ServerTest {
 
   @Before
-  public void setUp() throws IOException {
+  public void setUp(){
   }
 
   @Test
-  public void T01_handleRequest() throws IOException{
+  public void T01_handleRequest() {
     String request = "ping server";
 
-    assertEquals(Client.sendRequest(request, "127.0.0.1",25225)
-        ,"server.Server got request: " + request);
+    Client client = new Client();
+
+    int n = 500;
+    client.setRequestsCount(n);
+
+    assertEquals(n +" Server got request: " + request
+        ,client.sendRequest(request, "127.0.0.1",25225));
   }
 
   @Test
-  public void T02_stopServerTest() throws IOException{
+  public void T02_stopServerTest() {
     String request = "stop server";
 
-    assertEquals(Client.sendRequest(request, "127.0.0.1",25225)
-        ,"server.Server got request: " + request);
+    String answer = Client.sendRequest(request, "127.0.0.1",25225);
+
+    assertEquals("Server got request: " + request
+        ,answer.substring(answer.indexOf("Server")));
   }
 }

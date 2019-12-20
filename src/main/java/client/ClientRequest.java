@@ -6,8 +6,22 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.Socket;
+import java.util.concurrent.Callable;
 
-public class ClientRequest {
+public class ClientRequest implements Callable<String> {
+
+  private String request;
+  private Socket socket;
+
+  public ClientRequest(String request, Socket socket) {
+    this.request = request;
+    this.socket = socket;
+  }
+
+  @Override
+  public String call() {
+    return requestToServer(request, socket);
+  }
 
   public static String requestToServer(String request, Socket socket) {
     String answer = "";

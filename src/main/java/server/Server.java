@@ -1,26 +1,39 @@
 package server;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.sql.Timestamp;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 public class Server {
 
   private static boolean serverIsStarted = false;
+  private static int cores = 1;
 
-  public static void main(String[] args) throws IOException {
-    ServerSocket socket = new ServerSocket(25225);
+  public static void main(String[] args) throws IOException, ExecutionException, InterruptedException {
+    ServerSocket socket = new ServerSocket(25225, 2000);
+
+    cores = Runtime.getRuntime().availableProcessors();
+
+    ExecutorService es = Executors.newFixedThreadPool(cores);
 
     startServer();
-    while(serverIsStarted) {
+    while (serverIsStarted) {
       Socket client = socket.accept();
-      handleRequest(client);
+      Future<String> s = es.submit(new ServerHandleRequest(client));
+
+      String request = s.get();
+
+      if (request.contains("stop server")) {
+        es.shutdown();
+        stopServer();
+      }
     }
-    System.out.println("server.Server is stopped.");
+    System.out.println(new Timestamp(System.currentTimeMillis()) + "\tServer is stopped.");
   }
 
   public static void stopServer() {
@@ -29,31 +42,7 @@ public class Server {
 
   public static void startServer() {
     Server.serverIsStarted = true;
-    System.out.println("server.Server is started.");
-  }
-
-  private static void handleRequest(Socket request) throws IOException {
-    BufferedReader br = new BufferedReader(new InputStreamReader(request.getInputStream()));
-    BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(request.getOutputStream()));
-
-    String sb = "server.Server got request: %s";
-    String clientName = br.readLine();
-
-    sb = String.format(sb, clientName);
-
-    bw.write(sb);
-    bw.newLine();
-    bw.flush();
-
-    if(clientName.contains("stop server")) {
-      stopServer();
-    }
-
-    System.out.println(sb);
-
-    br.close();
-    bw.close();
-
-    request.close();
+    System.out.println(new Timestamp(System.currentTimeMillis())
+        + String.format("\tServer is started with %(d available processors", cores ));
   }
 }
