@@ -33,6 +33,7 @@ public class Server {
         stopServer();
       }
     }
+    socket.close();
     System.out.println(new Timestamp(System.currentTimeMillis()) + "\tServer is stopped.");
   }
 

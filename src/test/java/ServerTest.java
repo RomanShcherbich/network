@@ -2,23 +2,30 @@
 import static org.junit.Assert.*;
 
 import client.Client;
+import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.FixMethodOrder;
 import org.junit.runners.MethodSorters;
-
-import java.io.IOException;
+import server.StartServerThread;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class ServerTest {
+  private static Thread startThread;
 
-  @Before
-  public void setUp(){
+  @BeforeClass
+  public static void setUp(){
+    startThread = new Thread(new StartServerThread());
+    startThread.start();
   }
 
   @Test
   public void T01_handleRequest() {
     String request = "ping server";
+    String ipHost = "127.0.0.1";
+    int port = 25225;
 
     Client client = new Client();
 
@@ -26,16 +33,22 @@ public class ServerTest {
     client.setRequestsCount(n);
 
     assertEquals(n +" Server got request: " + request
-        ,client.sendRequest(request, "127.0.0.1",25225));
+        ,client.sendRequest(request, ipHost,port));
   }
 
   @Test
   public void T02_stopServerTest() {
     String request = "stop server";
+    String ipHost = "127.0.0.1";
+    int port = 25225;
 
     String answer = Client.sendRequest(request, "127.0.0.1",25225);
 
     assertEquals("Server got request: " + request
         ,answer.substring(answer.indexOf("Server")));
+  }
+
+  @AfterClass
+  public static void tearDown(){
   }
 }

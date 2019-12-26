@@ -1,6 +1,8 @@
 package client;
 
+import java.io.IOException;
 import java.net.Socket;
+import java.net.SocketException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -21,18 +23,24 @@ public class Client {
     for(int i = 0; i < requestsCount; i++) {
       try {
         Socket socket = openSocket(ipHost,port);
+        if (socket == null) {
+          throw new SocketException("Server is not available. Cannot open socket " + ipHost + ":" + port);
+        }
 
         Future<String> s = es.submit(new ClientRequest(request, socket));
         answer = s.get();
 
+        System.out.println(answer);
+
       } catch (InterruptedException | ExecutionException e) {
         e.printStackTrace(System.out);
+      } catch (SocketException e) {
+        e.printStackTrace();
+        break;
       }
-      if (request == "stop server") {
-        es.shutdown();
-        return answer;
+      if (request == "stop server" ) {
+        break;
       }
-      System.out.println(answer);
     }
     es.shutdown();
     return answer;
@@ -50,5 +58,13 @@ public class Client {
       e.printStackTrace();
     }
     return socket;
+  }
+
+  public static void closeSocket(Socket socket) {
+    try {
+      socket.close();
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
   }
 }
