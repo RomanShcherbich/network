@@ -20,8 +20,10 @@ public class StartServerThread implements Runnable {
       String[] params = null;
       meth.invoke(null, (Object) params);
 
-    } catch (ClassNotFoundException | NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException ex) {
+    } catch (ClassNotFoundException | NoSuchMethodException | InstantiationException | IllegalAccessException ex) {
       ex.printStackTrace();
+    } catch (InvocationTargetException ex) {
+      System.out.println("Server is started already.");
     }
   }
 }
